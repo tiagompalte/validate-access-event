@@ -43,7 +43,7 @@ async function validateTicket(ticketData: TicketData): Promise<void> {
     }
 }
 
-export async function markTicketAsUsed(ticketData: TicketData): Promise<boolean> {
+export async function markTicketAsUsed(ticketData: TicketData): Promise<void> {
     // Validate the ticket data
     await validateTicket(ticketData);
 
@@ -65,18 +65,18 @@ export async function markTicketAsUsed(ticketData: TicketData): Promise<boolean>
     // Connect to the contract
     const contract = new ethers.Contract(contractAddress, contractAbi, wallet);
 
-    // Call the contract method to mark the ticket as used
-    try {
-        const tx = await contract.markTicketAsUsed(
-            ticketData.address,
-            ticketData.ticketId,
-            ticketData.quantity,
-        ) as TransactionResponse;
-        await tx.wait();
-    } catch (err) {
-        console.error('Failed to mark ticket as used:', err);
-        return false;
-    }
+    console.log('Marking ticket as used:', ticketData);
 
-    return true;
+    // Call the contract method to mark the ticket as used
+    const tx = await contract.markTicketAsUsed(
+        ticketData.address,
+        ticketData.ticketId,
+        ticketData.quantity,
+    ) as TransactionResponse;
+
+    console.log('Transaction sent:', tx.hash);
+
+    // Wait for the transaction to be mined
+    console.log('Waiting for transaction to be mined...');
+    await tx.wait();
 }
